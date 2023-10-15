@@ -166,8 +166,8 @@ project.afterEvaluate {
                 artifact androidSourcesJar
                 artifact androidJavadocsJar
 
-                groupId = "com.acmerobotics.dashboard"
-                artifactId = "dashboard"
+                groupId = "club.delby.ftcdash"
+                artifactId = "ftcdashboard"
                 version dashboard_version
 
                 pom {
