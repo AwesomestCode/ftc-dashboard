@@ -59,6 +59,7 @@ import org.firstinspires.ftc.robotserver.internal.webserver.MimeTypesUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -87,6 +88,23 @@ public class FtcDashboard implements OpModeManagerImpl.Notifications {
     private static final String PREFS_AUTO_ENABLE_KEY = "autoEnable";
 
     private static FtcDashboard instance;
+
+    // This is really, really hacky. We should probably find a better way to do this.
+    private static boolean isVirtual;
+
+    static {
+        try {
+            isVirtual = Class.forName("org.firstinspires.ftc.teamcode.DependencyDataHook").getDeclaredMethod("isVirtualRobot").invoke(null).equals(true);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @OpModeRegistrar
     public static void registerOpMode(OpModeManager manager) {
@@ -1159,14 +1177,15 @@ public class FtcDashboard implements OpModeManagerImpl.Notifications {
 
     private RobotStatus getRobotStatus() {
         if (opModeManager == null) {
-            return new RobotStatus(core.enabled, false, "", RobotStatus.OpModeStatus.STOPPED, "", "");
+            return new RobotStatus(core.enabled, false, "", RobotStatus.OpModeStatus.STOPPED, "", "", isVirtual);
         } else {
             return activeOpMode.with(o -> {
                 return new RobotStatus(
                         core.enabled, true, opModeManager.getActiveOpModeName(),
                         // status is an enum so it's okay to return a copy here.
                         o.status,
-                        RobotLog.getGlobalWarningMessage().message, RobotLog.getGlobalErrorMsg()
+                        RobotLog.getGlobalWarningMessage().message, RobotLog.getGlobalErrorMsg(),
+                        isVirtual
                 );
             });
         }

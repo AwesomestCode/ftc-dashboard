@@ -18,6 +18,7 @@ export default function Dashboard() {
     (state: RootState) => state.settings.layoutPreset,
   );
   const enabled = useSelector((state: RootState) => state.status.enabled);
+  const isVirtualRobot = useSelector((state: RootState) => state.status.isVirtualRobot);
   const dispatch = useDispatch();
 
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
@@ -34,7 +35,15 @@ export default function Dashboard() {
       style={{ width: '100vw', height: '100vh' }}
     >
       <header className="flex items-center justify-between bg-primary-600 px-3 py-1 text-white">
-        <h1 className="text-2xl font-medium">FTC Dashboard</h1>
+        <h1 className="text-2xl font-medium">Delbotics 755 Internal Release</h1>
+        {
+          // if socket is connected, display whether robot is virtual or not. Otherwise, don't display anything.
+            socket.isConnected && (
+                <h1 className="text-2xl font-medium">
+                    {isVirtualRobot ? 'Virtual Robot' : 'Real Robot'}
+                </h1>
+            )
+        }
         <div className="flex-center">
           <select
             className="mx-2 rounded border-primary-300 bg-primary-100 py-1 text-sm text-black focus:border-primary-100 focus:ring-2 focus:ring-white focus:ring-opacity-40"

@@ -17,6 +17,7 @@ export type RobotStatus = {
 
 export type StatusState = {
   enabled: boolean;
+  isVirtualRobot: boolean;
   available: boolean;
   activeOpMode: string;
   activeOpModeStatus: Values<typeof OpModeStatus>;

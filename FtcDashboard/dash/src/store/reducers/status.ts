@@ -11,6 +11,7 @@ import {
 
 const initialState: StatusState = {
   enabled: true,
+  isVirtualRobot: true,
   available: false,
   activeOpMode: '',
   activeOpModeStatus: OpModeStatus.STOPPED,
