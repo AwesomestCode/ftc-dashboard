@@ -20,19 +20,23 @@ public class RobotStatus {
     private OpModeStatus activeOpModeStatus;
     private String warningMessage;
     private String errorMessage;
+    private double batteryVoltage;
 
     private boolean isVirtualRobot;
 
     /**
      * Creates a status object with the default values.
      */
-    public RobotStatus(boolean enabled, boolean available, String activeOpMode, OpModeStatus activeOpModeStatus, String warningMessage, String errorMessage, boolean isVirtualRobot) {
+    public RobotStatus(boolean enabled, boolean available, String activeOpMode,
+                       OpModeStatus activeOpModeStatus, String warningMessage,
+                       String errorMessage, double batteryVoltage, boolean isVirtualRobot) {
         this.enabled = enabled;
         this.available = available;
         this.activeOpMode = activeOpMode;
         this.activeOpModeStatus = activeOpModeStatus;
         this.warningMessage = warningMessage;
         this.errorMessage = errorMessage;
+        this.batteryVoltage = batteryVoltage;
         this.isVirtualRobot = isVirtualRobot;
     }
 }
