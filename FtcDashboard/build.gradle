@@ -124,7 +124,7 @@ def addPomDependencies(root) {
         return n
     }
 
-    addDep("com.acmerobotics.dashboard", "core", dashboard_version)
+    addDep("club.delby.ftcdash", "core", dashboard_version)
 
     ["RobotCore", "Hardware", "RobotServer", "FtcCommon"].forEach {
         addDep("org.firstinspires.ftc", it, min_sdk_version)
@@ -160,6 +160,22 @@ task androidJavadocsJar(type: Jar, dependsOn: androidJavadocs) {
 
 project.afterEvaluate {
     publishing {
+        repositories {
+            maven {
+                name = "GitHubPackages"
+                url = "https://maven.pkg.github.com/awesomestcode/ftc-dashboard"
+                credentials {
+                    System.out.println("GITHUB_PACKAGES_USERNAME: " + System.getenv("GITHUB_PACKAGES_USERNAME"))
+                    // throw exception if not "AwesomestCode"
+                    if(System.getenv("GITHUB_PACKAGES_USERNAME") != "awesomestcode") {
+                        throw new GradleException("GITHUB_PACKAGES_USERNAME is not AwesomestCode, is: " + System.getenv("GITHUB_PACKAGES_USERNAME"))
+                    }
+
+                    username = System.getenv("GITHUB_PACKAGES_USERNAME")
+                    password = System.getenv("GITHUB_PACKAGES_TOKEN")
+                }
+            }
+        }
         publications {
             maven(MavenPublication) {
                 artifact bundleReleaseAar
@@ -173,7 +189,7 @@ project.afterEvaluate {
                 pom {
                     description = "Web dashboard designed for FTC"
                     name = "FTC Dashboard"
-                    url = "https://github.com/acmerobotics/ftc-dashboard"
+                    url = "https://github.com/AwesomestCode/ftc-dashboard"
 
                     licenses {
                         license {
@@ -189,10 +205,14 @@ project.afterEvaluate {
                             name = "Ryan Brott"
                             email = "rcbrott@gmail.com"
                         }
+                        developer {
+                            id = "awesomestcode"
+                            name = "Raymond Xu"
+                        }
                     }
 
                     scm {
-                        url = "https://github.com/acmerobotics/ftc-dashboard"
+                        url = "https://github.com/awesomestcode/ftc-dashboard"
                     }
                 }
 

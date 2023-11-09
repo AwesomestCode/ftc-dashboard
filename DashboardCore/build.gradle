@@ -28,19 +28,35 @@ test {
 
 project.afterEvaluate {
     publishing {
+        repositories {
+            maven {
+                name = "GitHubPackages"
+                url = "https://maven.pkg.github.com/awesomestcode/ftc-dashboard"
+                credentials {
+                    System.out.println("GITHUB_PACKAGES_USERNAME: " + System.getenv("GITHUB_PACKAGES_USERNAME"))
+                    // throw exception if not "AwesomestCode"
+                    if(System.getenv("GITHUB_PACKAGES_USERNAME") != "awesomestcode") {
+                        throw new GradleException("GITHUB_PACKAGES_USERNAME is not AwesomestCode, is: " + System.getenv("GITHUB_PACKAGES_USERNAME"))
+                    }
+
+                    username = System.getenv("GITHUB_PACKAGES_USERNAME")
+                    password = System.getenv("GITHUB_PACKAGES_TOKEN")
+                }
+            }
+        }
         publications {
             maven(MavenPublication) {
                 artifact jar
                 artifact sourcesJar
 
-                groupId = "com.acmerobotics.dashboard"
+                groupId = "club.delby.ftcdash"
                 artifactId = "core"
                 version dashboard_version
 
                 pom {
                     description = "Web dashboard designed for FTC"
                     name = "FTC Dashboard"
-                    url = "https://github.com/acmerobotics/ftc-dashboard"
+                    url = "https://github.com/AwesomestCode/ftc-dashboard"
 
                     licenses {
                         license {
@@ -56,10 +72,14 @@ project.afterEvaluate {
                             name = "Ryan Brott"
                             email = "rcbrott@gmail.com"
                         }
+                        developer {
+                            id = "awesomestcode"
+                            name = "Raymond Xu"
+                        }
                     }
 
                     scm {
-                        url = "https://github.com/acmerobotics/ftc-dashboard"
+                        url = "https://github.com/AwesomestCode/ftc-dashboard"
                     }
                 }
             }
