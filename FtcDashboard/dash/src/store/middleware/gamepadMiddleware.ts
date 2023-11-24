@@ -188,6 +188,9 @@ const extractGamepadState = (gamepad: Gamepad) => {
 let gamepad1Index = -1;
 let gamepad2Index = -1;
 
+// DELBOTICS PATCH: array of current key states: string to boolean
+let keyStates: Record<string, boolean> = {};
+
 const gamepadMiddleware: Middleware<Record<string, unknown>, RootState> = (
   store,
 ) => {
@@ -213,10 +216,63 @@ const gamepadMiddleware: Middleware<Record<string, unknown>, RootState> = (
       });
     }, 1000);
   }
+
+  // DELBOTICS PATCH BEGIN
+  window.addEventListener('keydown', (event) => {
+    keyStates[event.code] = true;
+    console.log("keyStates: ", keyStates)
+  });
+  window.addEventListener('keyup', (event) => {
+    keyStates[event.code] = false;
+    console.log("keyStates: ", keyStates)
+  });
+  // set everything to false on blur
+  window.addEventListener('blur', () => {
+      keyStates = {};
+  });
+
+  function allGamepadsDisconnected() {
+    return getGamepads().every((gamepad) => gamepad === null);
+  }
+
+  let atLeastOneKeyWasEverPressed : boolean = false;
+
+  // DELBOTICS PATCH END
   function updateGamepads() {
     const gamepads = getGamepads();
-    if (gamepads.length === 0) {
-      setTimeout(updateGamepads, 500);
+    // DELBOTICS PATCH BEGIN
+    if (gamepads.length === 0 || allGamepadsDisconnected()) {
+      //console.log("There are no gamepads connected. Using a virtual gamepad this tick.")
+      let virtualGamepadState = REST_GAMEPAD_STATE;
+      // if the user presses W, A, S, or D, then we will set the virtual joystick to the right position
+      if (keyStates["KeyW"]) {
+        virtualGamepadState.left_stick_y = -0.5;
+        atLeastOneKeyWasEverPressed = true;
+      } else if (keyStates["KeyS"]) {
+        virtualGamepadState.left_stick_y = 0.5;
+        atLeastOneKeyWasEverPressed = true;
+      } else {
+        virtualGamepadState.left_stick_y = 0;
+      }
+      if (keyStates["KeyA"]) {
+        virtualGamepadState.left_stick_x = -0.5;
+        atLeastOneKeyWasEverPressed = true;
+      }
+      else if (keyStates["KeyD"]) {
+        virtualGamepadState.left_stick_x = 0.5;
+        atLeastOneKeyWasEverPressed = true;
+      } else {
+        virtualGamepadState.left_stick_x = 0;
+      }
+      //setTimeout(updateGamepads, 500);
+      if(atLeastOneKeyWasEverPressed) {
+        console.log("Sending virtual gamepad state: ", virtualGamepadState);
+        (store.dispatch as AppThunkDispatch)(
+            sendGamepadState(virtualGamepadState, REST_GAMEPAD_STATE),
+        );
+      }
+      requestAnimationFrame(updateGamepads)
+      // DELBOTICS PATCH END
       return;
     }
 
